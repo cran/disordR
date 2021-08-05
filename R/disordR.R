@@ -1,4 +1,5 @@
-`hash` <- function(x){x@hash}
+`hash` <- function(x){x@hash}  # extractor method
+`hashcal` <- function(x){digest::sha1(x)}
 `elements` <- function(x){if(is.disord(x)){return(x@.Data)}else{return(x)}}  # no occurrences of '@' below this line
 
 setClass("disord", contains = "vector", slots=c(.Data="vector",hash="character"),
@@ -27,18 +28,59 @@ setValidity("disord", function(object){
 `is.disord` <- function(x){inherits(x,"disord")}
 
 `disord` <- function(v,h){ # v is a vector but it needs a hash attribute
-    if(missing(h)){h <- digest::sha1(v)}
+    if(missing(h)){h <- hashcal(v)}
     new("disord",.Data=v,hash=h)  # this is the only occurence of new() in the package
 }
 
 `allsame` <- function(x){length(unique(elements(x)))==1}
 
-`consistent` <- function(x,y){allsame(x) || allsame(y) || identical(hash(x),hash(y))}
+`consistent` <- function(x,y){
+  if(allsame(x) || allsame(y)){return(TRUE)}
+  if(is.disord(x) && is.disord(y)){
+    return(identical(hash(x),hash(y)))
+  } else {
+    return(FALSE)
+  }
+}
 
 `%~%` <- function(x,y){consistent(x,y)}
 
+setGeneric("match")
+setMethod("match",signature(x="disord",table="ANY"),
+          function(x,table, nomatch,incomparables){
+            disord(match(elements(x),elements(table),nomatch,incomparables),hash(x))
+          } )
+
+setMethod("match",signature(x="ANY",table="disord"),
+          function(x,table, nomatch,incomparables){
+            stop("match() not defined if second argument a disord")
+          } )
+setMethod("match",signature(x="disord",table="disord"),
+          function(x,table, nomatch,incomparables){
+            stop("match() not defined if second argument a disord")
+          } )
+
+setGeneric("%in%")
+setMethod("%in%",signature("disord","ANY"),function(x,table){disord(match(elements(x),table,nomatch=0L)>0L,hash(x))})
+setMethod("%in%",signature("ANY","disord"),function(x,table){match(x,elements(table),nomatch=0L)>0L})
+setMethod("%in%",signature("disord","disord"),function(x,table){disord(match(elements(x),elements(table),nomatch=0L)>0L,hash(x))})
+
 setGeneric("drop")
 setMethod("drop","disord",function(x){if(allsame(x)){return(elements(x))}else{return(x)}})
+
+setGeneric("is.na")
+setMethod("is.na","disord",
+          function(x){
+              disord(is.na(elements(x)),hash(x))
+          } )
+
+setGeneric("is.na<-")
+setMethod("is.na<-","disord",
+          function(x,value){
+              jj <- elements(x)
+              is.na(jj) <- value
+              disord(jj,hash(x))
+          } )
 
 `rdis` <- function(n=9){disord(runif(n))}
 
@@ -205,20 +247,14 @@ setMethod("Compare", signature(e1="ANY"   , e2="disord"), any_compare_disord   )
            )
 }
 
-`disord_logical_negate` <- function(a){disord(-a,hash(a))}
-
-`disord_logic_missing` <- function(e1,e2){
-    switch(.Generic,
-           "!" = disord_logical_negate(e1),
-           stop(paste("Unary operator \"", .Generic, "\" not defined for disords"))
-           )
+`disord_logical_negate` <- function(x){
+  disord(!elements(x),hash(x))
 }
+setMethod("!","disord",disord_logical_negate)
 
-    
 setMethod("Logic",signature(e1="disord",e2="ANY"), disord_logic_any)
 setMethod("Logic",signature(e1="ANY",e2="disord"), any_logic_disord)
 setMethod("Logic",signature(e1="disord",e2="disord"), disord_logic_disord)
-setMethod("Logic",signature(e1="disord",e2="missing"), disord_logic_missing)
 
 setClassUnion("index", members =  c("numeric", "logical", "character")) # taken from the Matrix package.
 
@@ -226,9 +262,9 @@ setMethod("[", signature("disord",i="index",j="missing",drop="ANY"),
           function(x,i,j,drop){
             jj <- seq_along(x)
             if(identical(sort(jj[i]),jj)){  # that is, extract every element
-              return(disord(x,digest::sha1(c(hash(x),i))))
+              return(disord(x,hashcal(c(hash(x),i))))
             } else {
-              stop("if using a regular index to extract, must extract all elements")
+              stop("if using a regular index to extract, must extract each element once and once only")
             }
           } )
 
@@ -236,7 +272,7 @@ setMethod("[", signature("disord",i="disord",j="missing",drop="ANY"),  # makes t
           function(x,i,j,drop=TRUE){
               stopifnot(consistent(x,i))
               out <- elements(x)[elements(i)]
-              out <- disord(out, digest::sha1(c(hash(x),hash(i))))  # NB newly generated hash, stops things like a[a>4] + a[a<3] but allows a[x<3] <- x[x<3]
+              out <- disord(out, hashcal(c(hash(x),hash(i))))  # NB newly generated hash, stops things like a[a>4] + a[a<3] but allows a[x<3] <- x[x<3]
               if(drop){
                   return(drop(out))
               } else {
@@ -248,7 +284,7 @@ setMethod("[", signature("disord",i="index",j="ANY",drop="ANY"),function(x,i,j,d
 
 setMethod("[", signature("disord",i="missing",j="missing",drop="ANY"), # x[]
           function(x,i,j,drop){
-            out <- disord(x,digest::sha1(0L,c(elements(x))))
+            out <- disord(x,hashcal(c(hash(x),0)))
             if(drop){out <- drop(out)}
             return(out)
           } )
@@ -268,7 +304,6 @@ setReplaceMethod("[",signature(x="disord",i="disord",j="missing",value="disord")
 
 setReplaceMethod("[",signature(x="disord",i="disord",j="missing",value="ANY"), # x[x<3] <- 333
                  function(x,i,j,value){
-                     stopifnot(length(value) == 1)
                      stopifnot(consistent(x,i))
                      jj <- elements(x)
                      jj[elements(i)] <- value   # the meat; OK because x %~% i
@@ -301,74 +336,26 @@ setMethod("rev",signature=c(x="disord"),
             disord(rev(elements(x)),h=paste(rev(strsplit(hash(x), "")[[1]]), collapse = ""))
           } )
 
-setGeneric("pmindispair",function(x,y, na.rm=FALSE){standardGeneric("pmindispair")})
-setMethod("pmindispair",c("disord","disord"),
-          function(x,y,na.rm=FALSE){
-            stopifnot(consistent(x,y))
-            disord(pmin(elements(x),elements(y),na.rm=na.rm),hash(x))
-          } )
-
-setMethod("pmindispair",c("disord","ANY"),
-          function(x,y,na.rm=FALSE){
-            stopifnot(consistent(x,y))
-            disord(pmin(elements(x),elements(y),na.rm=na.rm),hash(x))
-          } ) 
-
-setMethod("pmindispair",c("ANY","disord"),
-          function(x,y,na.rm=FALSE){
-            stopifnot(consistent(x,y))
-            disord(pmin(elements(x),elements(y),na.rm=na.rm),hash(y))
-          } ) 
-
-setGeneric("pmindis",function(x, ..., na.rm=FALSE){standardGeneric("pmindis")})
-setMethod("pmindis", signature(x="disord"),
-          function(x, ..., na.rm=FALSE){
-              a <- list(...)
-              if(length(a)==0){  #pmindis(a)
-                  return(x)
-              } else if(length(a)==1){  # pmindis(a,b)
-                  return(pmindispair(x,a[[1]],na.rm=na.rm))
-              } else {
-                  return(do.call("pmindis",c(list(pmindispair(x,a[[1]],na.rm=na.rm)),a[-1],na.rm=na.rm)))
-              }
-          } )
-
-setGeneric("pmaxdispair",function(x,y, na.rm=FALSE){standardGeneric("pmaxdispair")})
-setMethod("pmaxdispair",c("disord","disord"),
-          function(x,y,na.rm=FALSE){
-            stopifnot(consistent(x,y))
-            disord(pmax(elements(x),elements(y),na.rm=na.rm),hash(x))
-          } )
-
-setMethod("pmaxdispair",c("disord","ANY"),
-          function(x,y,na.rm=FALSE){
-            stopifnot(consistent(x,y))
-            disord(pmax(elements(x),elements(y),na.rm=na.rm),hash(x))
-          } ) 
-
-setMethod("pmaxdispair",c("ANY","disord"),
-          function(x,y,na.rm=FALSE){
-            stopifnot(consistent(x,y))
-            disord(pmax(elements(x),elements(y),na.rm=na.rm),hash(y))
-          } ) 
-
-setGeneric("pmaxdis",function(x, ..., na.rm=FALSE){standardGeneric("pmaxdis")})
-setMethod("pmaxdis", signature(x="disord"),
-          function(x, ..., na.rm=FALSE){
-            a <- list(...)
-            if(length(a)==0){  #pmaxdis(a)
-              return(x)
-            } else if(length(a)==1){  # pmaxdis(a,b)
-              return(pmaxdispair(x,a[[1]],na.rm=na.rm))
-            } else {
-              return(do.call("pmaxdis",c(list(pmaxdispair(x,a[[1]],na.rm=na.rm)),a[-1],na.rm=na.rm)))
-            }
-          } )
-
 setMethod("sapply",signature(X="disord"),
           function(X,FUN,...,simplify=TRUE,USE.NAMES=TRUE){
             disord(sapply(elements(X),FUN,...,simplify=simplify,USE.NAMES=USE.NAMES),h=hash(X))
           } )
 
+setGeneric("lapply")
+setMethod("lapply",signature(X="disord"),
+          function(X,FUN,...){
+            disord(lapply(elements(X),FUN,...),h=hash(X))
+          } )
+
+setGeneric("unlist")
+setMethod("unlist","disord",
+          function(x,recursive=TRUE){
+            out <- unlist(elements(x),recursive=recursive)
+            stopifnot(length(out) == length(x))
+            return(disord(out,h=hash(x)))
+          } )
+
 setMethod("c","disord",function(x, ..., recursive){stop("c() does not make sense for disord")})
+
+
 
