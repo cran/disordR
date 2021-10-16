@@ -109,7 +109,7 @@ setMethod("show", "disord", function(object){disord_show(object)})
 }
 
 `disord_arith_numeric` <- function(e1,e2){  # e1 disord, e2 numeric
-    stopifnot(length(e2)==1)
+    stopifnot(consistent(e1,e2))
     switch(.Generic,
            "+"  = disord_plus_numeric (e1,  e2),
            "-"  = disord_plus_numeric (e1, -e2),
@@ -122,7 +122,7 @@ setMethod("show", "disord", function(object){disord_show(object)})
 }
 
 `numeric_arith_disord` <- function(e1,e2){ # e1 numeric, e2 onion
-    stopifnot(length(e1)==1)
+    stopifnot(consistent(e1,e2))
     switch(.Generic,
            "+" = disord_plus_numeric(e2,  e1),
            "-" = disord_plus_numeric(-e2, e1),
@@ -185,7 +185,7 @@ setMethod("Arith",signature(e1 = "numeric", e2="disord" ), numeric_arith_disord)
 }
 
 `disord_compare_any` <- function(e1,e2){
-    stopifnot(length(e2)==1)
+    stopifnot(consistent(e1,e2))
     a1 <- elements(e1)
     switch(.Generic,
            "==" = disord(a1==e2,hash(e1)),
@@ -199,7 +199,7 @@ setMethod("Arith",signature(e1 = "numeric", e2="disord" ), numeric_arith_disord)
 }
 
 `any_compare_disord` <- function(e1,e2){
-    stopifnot(length(e1)==1)
+    stopifnot(consistent(e1,e2))
     a2 <- elements(e2)
     switch(.Generic,
            "==" = disord(e1==a2,hash(e2)),
@@ -228,7 +228,7 @@ setMethod("Compare", signature(e1="ANY"   , e2="disord"), any_compare_disord   )
 }
 
 `disord_logic_any` <- function(e1,e2){
-    stopifnot(length(e2)==1)
+    stopifnot(consistent(e1,e2))
     a1 <- elements(e1)
     switch(.Generic,
            "&" = disord(a1 & e2,hash(e1)),
@@ -238,7 +238,7 @@ setMethod("Compare", signature(e1="ANY"   , e2="disord"), any_compare_disord   )
 }
 
 `any_logic_disord` <- function(e1,e2){
-    stopifnot(length(e1)==1)
+    stopifnot(consistent(e1,e2))
     a2 <- elements(e2)
     switch(.Generic,
            "&" = disord(e1 & a2,hash(e2)),
@@ -305,6 +305,7 @@ setReplaceMethod("[",signature(x="disord",i="disord",j="missing",value="disord")
 setReplaceMethod("[",signature(x="disord",i="disord",j="missing",value="ANY"), # x[x<3] <- 333
                  function(x,i,j,value){
                      stopifnot(consistent(x,i))
+                     stopifnot(consistent(x[i],value))
                      jj <- elements(x)
                      jj[elements(i)] <- value   # the meat; OK because x %~% i
                      disord(jj,hash(x))
@@ -357,5 +358,16 @@ setMethod("unlist","disord",
 
 setMethod("c","disord",function(x, ..., recursive){stop("c() does not make sense for disord")})
 
+setAs("disord","logical"  ,function(from){disord(as.logical  (elements(from)),hash(from))})
+setAs("disord","numeric"  ,function(from){disord(as.numeric  (elements(from)),hash(from))})
+setAs("disord","double"   ,function(from){disord(as.double   (elements(from)),hash(from))})
+setAs("disord","list"     ,function(from){disord(as.list     (elements(from)),hash(from))})
+setAs("disord","character",function(from){disord(as.character(elements(from)),hash(from))})
+setAs("disord","complex"  ,function(from){disord(as.complex  (elements(from)),hash(from))})
 
-
+setMethod("as.logical"  ,"disord",function(x){as(x,"logical"  )})
+setMethod("as.numeric"  ,"disord",function(x){as(x,"numeric"  )})
+setMethod("as.double"   ,"disord",function(x){as(x,"double"   )})
+setMethod("as.list"     ,"disord",function(x){as(x,"list"     )})
+setMethod("as.character","disord",function(x){as(x,"character")})
+setMethod("as.complex"  ,"disord",function(x){as(x,"complex"  )})

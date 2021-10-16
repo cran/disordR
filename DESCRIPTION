@@ -1,7 +1,7 @@
 Package: disordR
 Type: Package
 Title: Non-Ordered Vectors
-Version: 0.0-7
+Version: 0.0-8
 Authors@R: person(given=c("Robin", "K. S."), family="Hankin", role = c("aut","cre"), email="hankin.robin@gmail.com", comment = c(ORCID = "0000-0001-5982-0415"))
 Depends: methods,digest
 Suggests: mvp,knitr,rmarkdown,testthat
@@ -29,7 +29,7 @@ License: GPL (>= 2)
 URL: https://github.com/RobinHankin/disordR
 BugReports: https://github.com/RobinHankin/disordR/issues
 NeedsCompilation: no
-Packaged: 2021-08-05 06:55:20 UTC; rhankin
+Packaged: 2021-10-16 19:05:40 UTC; rhankin
 Author: Robin K. S. Hankin [aut, cre] (<https://orcid.org/0000-0001-5982-0415>)
 Repository: CRAN
-Date/Publication: 2021-08-05 07:50:11 UTC
+Date/Publication: 2021-10-16 20:40:02 UTC
