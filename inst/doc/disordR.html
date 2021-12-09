@@ -11,7 +11,7 @@
 
 <meta name="author" content="Robin K. S. Hankin" />
 
-<meta name="date" content="2021-10-17" />
+<meta name="date" content="2021-12-09" />
 
 <title>The DisordR package: a use-case</title>
 
@@ -348,7 +348,7 @@ pre code {
 
 <h1 class="title toc-ignore">The DisordR package: a use-case</h1>
 <h4 class="author">Robin K. S. Hankin</h4>
-<h4 class="date">2021-10-17</h4>
+<h4 class="date">2021-12-09</h4>
 
 </div>
 
@@ -389,42 +389,42 @@ coeffs(a) &lt;- pmax(a,3)</code></pre>
 <pre><code>## Loading required package: digest</code></pre>
 <pre class="r"><code>a &lt;- rdis()
 a</code></pre>
-<pre><code>## A disord object with hash 906e1eaeea6c6cda4f16803547f8b3bf67bac487 and elements
-## [1] 0.4148606 0.9568112 0.9957079 0.3180338 0.4673644 0.1462054 0.7697941
-## [8] 0.2737005 0.1653056
+<pre><code>## A disord object with hash 131a7bd133cf621ee4b80c5790b3f1c610877a7a and elements
+## [1] 0.739091303 0.163806648 0.008055828 0.508175316 0.952463978 0.177738530
+## [7] 0.270717615 0.246741892 0.971219898
 ## (in some order)</code></pre>
 <p>Object <code>a</code> is a <code>disord</code> object but it behaves similarly to a regular numeric vector in many ways:</p>
 <pre class="r"><code>a^2</code></pre>
-<pre><code>## A disord object with hash 906e1eaeea6c6cda4f16803547f8b3bf67bac487 and elements
-## [1] 0.17210934 0.91548772 0.99143419 0.10114549 0.21842944 0.02137603 0.59258302
-## [8] 0.07491195 0.02732594
+<pre><code>## A disord object with hash 131a7bd133cf621ee4b80c5790b3f1c610877a7a and elements
+## [1] 5.462560e-01 2.683262e-02 6.489637e-05 2.582422e-01 9.071876e-01
+## [6] 3.159098e-02 7.328803e-02 6.088156e-02 9.432681e-01
 ## (in some order)</code></pre>
 <pre class="r"><code>max(a)</code></pre>
-<pre><code>## [1] 0.9957079</code></pre>
+<pre><code>## [1] 0.9712199</code></pre>
 <pre class="r"><code>sort(a)</code></pre>
-<pre><code>## [1] 0.1462054 0.1653056 0.2737005 0.3180338 0.4148606 0.4673644 0.7697941
-## [8] 0.9568112 0.9957079</code></pre>
+<pre><code>## [1] 0.008055828 0.163806648 0.177738530 0.246741892 0.270717615 0.508175316
+## [7] 0.739091303 0.952463978 0.971219898</code></pre>
 <p>However, if we try to combine object <code>a</code> with another object with different hash, we get errors:</p>
 <pre class="r"><code>b &lt;- rdis()
 b</code></pre>
-<pre><code>## A disord object with hash a3a1b725411eb0118ba56914825d50836ccaacbd and elements
-## [1] 0.52408923 0.73192164 0.81462980 0.02245134 0.43962042 0.06871523 0.42596683
-## [8] 0.93813506 0.59498170
+<pre><code>## A disord object with hash c8cce1f2d382b84a86d7bb0f7703883ffcd5771e and elements
+## [1] 0.40046097 0.34087807 0.59601006 0.79873421 0.11896416 0.82795258 0.13026470
+## [8] 0.18910115 0.04542197
 ## (in some order)</code></pre>
 <pre class="r"><code>a+b</code></pre>
 <pre><code>## Error in a + b: consistent(e1, e2) is not TRUE</code></pre>
 <p>The error is given because objects <code>a</code> and <code>b</code> are stored in a non-compatible order. Many extract and replace methods are implemented:</p>
 <pre class="r"><code>a[a&lt;0.5] &lt;- 0  # round down
 a</code></pre>
-<pre><code>## A disord object with hash 906e1eaeea6c6cda4f16803547f8b3bf67bac487 and elements
-## [1] 0.0000000 0.9568112 0.9957079 0.0000000 0.0000000 0.0000000 0.7697941
-## [8] 0.0000000 0.0000000
+<pre><code>## A disord object with hash 131a7bd133cf621ee4b80c5790b3f1c610877a7a and elements
+## [1] 0.7390913 0.0000000 0.0000000 0.5081753 0.9524640 0.0000000 0.0000000
+## [8] 0.0000000 0.9712199
 ## (in some order)</code></pre>
 <pre class="r"><code>b[b&gt;0.6] &lt;- b[b&gt;0.6] + 3  # add 3 to every element greater than 0.6
 b</code></pre>
-<pre><code>## A disord object with hash a3a1b725411eb0118ba56914825d50836ccaacbd and elements
-## [1] 0.52408923 3.73192164 3.81462980 0.02245134 0.43962042 0.06871523 0.42596683
-## [8] 3.93813506 0.59498170
+<pre><code>## A disord object with hash c8cce1f2d382b84a86d7bb0f7703883ffcd5771e and elements
+## [1] 0.40046097 0.34087807 0.59601006 3.79873421 0.11896416 3.82795258 0.13026470
+## [8] 0.18910115 0.04542197
 ## (in some order)</code></pre>
 <p>Usual semantics follow, provided one is careful to maintain the hash code:</p>
 <pre class="r"><code>a &lt;- disord(1:10)
