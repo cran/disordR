@@ -1,9 +1,10 @@
 Package: disordR
 Type: Package
 Title: Non-Ordered Vectors
-Version: 0.0-9
+Version: 0.0-9-1
 Authors@R: person(given=c("Robin", "K. S."), family="Hankin", role = c("aut","cre"), email="hankin.robin@gmail.com", comment = c(ORCID = "0000-0001-5982-0415"))
-Depends: methods,digest
+Depends: methods,Matrix
+Imports: digest
 Suggests: mvp,knitr,rmarkdown,testthat
 VignetteBuilder: knitr
 Maintainer: Robin K. S. Hankin <hankin.robin@gmail.com>
@@ -22,14 +23,12 @@ Description: Functionality for manipulating values of associative
   python list comprehension.  The idea is to prevent ill-defined
   operations on values (or keys) of associative maps, whose order is
   undefined or at best implementation-specific, while allowing and
-  facilitating sensible operations.  The package is needed for
-  development versions of 'mvp', 'hyper2', 'spray', 'clifford', and
-  'freealg'.
+  facilitating sensible operations.
 License: GPL (>= 2)
 URL: https://github.com/RobinHankin/disordR
 BugReports: https://github.com/RobinHankin/disordR/issues
 NeedsCompilation: no
-Packaged: 2021-12-09 00:13:08 UTC; rhankin
+Packaged: 2022-05-23 22:16:18 UTC; rhankin
 Author: Robin K. S. Hankin [aut, cre] (<https://orcid.org/0000-0001-5982-0415>)
 Repository: CRAN
-Date/Publication: 2021-12-09 09:30:19 UTC
+Date/Publication: 2022-05-24 00:10:02 UTC

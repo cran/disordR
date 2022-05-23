@@ -28,7 +28,6 @@
 \alias{disord_logic_unary}
 \alias{disord_logic_missing}
 \alias{disord_logical_negate}
-\alias{an_y_logic_disord}
 \alias{disord_show}
 \alias{disord_unary}
 \alias{numeric_arith_disord}
@@ -62,7 +61,10 @@ the disord object if appropriate.
 \author{Robin K. S. Hankin}
 \examples{
 
-a <- disord(sample(20))
+a <- rdis()
+a
 a + 2*a
-a[a\%\%2==1] <- a[a\%\%2==1] + 5
+a > 5
+a[a > 5] <- a[a > 5] + 100
+a
 }

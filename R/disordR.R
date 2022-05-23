@@ -27,12 +27,14 @@ setValidity("disord", function(object){
 
 `is.disord` <- function(x){inherits(x,"disord")}
 
-`disord` <- function(v,h){ # v is a vector but it needs a hash attribute
+`disord` <- function(v,h,drop=TRUE){ # v is a vector but it needs a hash attribute
     if(missing(h)){h <- hashcal(v)}
-    new("disord",.Data=v,hash=h)  # this is the only occurence of new() in the package
+    out <- new("disord",.Data=v,hash=h)  # this is the only occurence of new() in the package
+    if(drop){out <- drop(out)}
+    return(out)
 }
 
-`allsame` <- function(x){length(unique(elements(x)))==1}
+`allsame` <- function(x){length(unique(elements(x)))<=1}
 
 `consistent` <- function(x,y){
   if(allsame(x) || allsame(y)){return(TRUE)}
@@ -77,12 +79,13 @@ setMethod("is.na","disord",
 setGeneric("is.na<-")
 setMethod("is.na<-","disord",
           function(x,value){
+              stopifnot(consistent(x,value))
               jj <- elements(x)
               is.na(jj) <- value
               disord(jj,hash(x))
           } )
 
-`rdis` <- function(n=9){disord(runif(n))}
+`rdis` <- function(n=9){disord(sample(n))}
 
 setMethod("show", "disord", function(object){disord_show(object)})
 
@@ -104,7 +107,7 @@ setMethod("show", "disord", function(object){disord_show(object)})
          "/"  = disord_prod_disord(e1, disord_inverse(e2)),
          "^"  = disord_power_disord(e1, e2),
          "%%" = disord_mod_disord(e1, e2),
-         stop(paste("binary operator \"", .Generic, "\" not defined for disord objects"))
+         stop(gettextf("binary operator %s not defined for disord objects", dQuote(.Generic)))
          )
 }
 
@@ -117,7 +120,7 @@ setMethod("show", "disord", function(object){disord_show(object)})
            "/"  = disord_prod_numeric (e1,1/e2),
            "^"  = disord_power_numeric(e1,  e2),
            "%%" = disord_mod_numeric(e1,  e2),
-           stop(paste("binary operator \"", .Generic, "\" not defined for disord objects"))
+           stop(gettextf("binary operator %s not defined for disord objects", dQuote(.Generic)))
            )
 }
 
@@ -130,7 +133,7 @@ setMethod("show", "disord", function(object){disord_show(object)})
            "/" = disord_prod_numeric(disord_inverse(e2),e1),  
            "^" = numeric_power_disord(e1,e2),
            "%%" = numeric_mod_disord(e1,e2),
-           stop(paste("binary operator \"", .Generic, "\" not defined for disords"))
+           stop(gettextf("binary operator %s not defined for disord objects", dQuote(.Generic)))
            )
 }
 
@@ -147,7 +150,7 @@ setMethod("show", "disord", function(object){disord_show(object)})
     switch(.Generic,
            "+" = disord_positive(e1),
            "-" = disord_negative(e1),
-           stop(paste("Unary operator \"", .Generic, "\" not defined for disords"))
+           stop(gettextf("unary operator %s not defined for disord objects", dQuote(.Generic)))
            )
 }
 
@@ -180,7 +183,7 @@ setMethod("Arith",signature(e1 = "numeric", e2="disord" ), numeric_arith_disord)
            "<"  = disord(a1< a2,hash(e1)),
            ">=" = disord(a1>=a2,hash(e1)),
            "<=" = disord(a1<=a2,hash(e1)),
-           stop(paste(.Generic, "not supported for disord objects"))
+           stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
 
@@ -194,7 +197,7 @@ setMethod("Arith",signature(e1 = "numeric", e2="disord" ), numeric_arith_disord)
            "<"  = disord(a1< e2,hash(e1)),
            ">=" = disord(a1>=e2,hash(e1)),
            "<=" = disord(a1<=e2,hash(e1)),
-           stop(paste(.Generic, "not supported for disord objects"))
+           stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
 
@@ -208,7 +211,7 @@ setMethod("Arith",signature(e1 = "numeric", e2="disord" ), numeric_arith_disord)
            "<"  = disord(e1< a2,hash(e2)),
            ">=" = disord(e1>=a2,hash(e2)),
            "<=" = disord(e1<=a2,hash(e2)),
-           stop(paste(.Generic, "not supported for disord objects"))
+           stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
 
@@ -223,7 +226,7 @@ setMethod("Compare", signature(e1="ANY"   , e2="disord"), any_compare_disord   )
     switch(.Generic,
            "&" = disord(a1 & a2,hash(e1)),
            "|" = disord(a1 | a2,hash(e1)),
-           stop(paste(.Generic, "not supported for disord objects"))
+           stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
 
@@ -233,7 +236,7 @@ setMethod("Compare", signature(e1="ANY"   , e2="disord"), any_compare_disord   )
     switch(.Generic,
            "&" = disord(a1 & e2,hash(e1)),
            "|" = disord(a1 | e2,hash(e1)),
-           stop(paste(.Generic, "not supported for disord objects"))
+           stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
 
@@ -243,7 +246,7 @@ setMethod("Compare", signature(e1="ANY"   , e2="disord"), any_compare_disord   )
     switch(.Generic,
            "&" = disord(e1 & a2,hash(e2)),
            "|" = disord(e1 | a2,hash(e2)),
-           stop(paste(.Generic, "not supported for disord objects"))
+           stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
 
@@ -256,15 +259,18 @@ setMethod("Logic",signature(e1="disord",e2="ANY"), disord_logic_any)
 setMethod("Logic",signature(e1="ANY",e2="disord"), any_logic_disord)
 setMethod("Logic",signature(e1="disord",e2="disord"), disord_logic_disord)
 
-setClassUnion("index", members =  c("numeric", "logical", "character")) # taken from the Matrix package.
+
 
 setMethod("[", signature("disord",i="index",j="missing",drop="ANY"),
           function(x,i,j,drop){
             jj <- seq_along(x)
-            if(identical(sort(jj[i]),jj)){  # that is, extract every element
-              return(disord(x,hashcal(c(hash(x),i))))
+            jji <- jj[i]
+            if(identical(sort(jji),jj)){  # that is, extract every element
+              return(disord(x,hashcal(c(hash(x),i)))) # NB new hash code
+            } else if(length(jji)==0){
+                return(disord(jji,hash(x)))         # NB same hash code as x
             } else {
-              stop("if using a regular index to extract, must extract each element once and once only")
+              stop("if using a regular index to extract, must extract each element once and once only (or none of them)")
             }
           } )
 
@@ -289,9 +295,16 @@ setMethod("[", signature("disord",i="missing",j="missing",drop="ANY"), # x[]
             return(out)
           } )
 
-setReplaceMethod("[",signature(x="disord",i="index",j="missing",value="ANY"),  # a[1:5] <- a[1:5] + 33  = fake
-                 function(x,i,j,value){stop("cannot use a regular index to extract, only a disord object")}
-                 )
+setReplaceMethod("[",signature(x="disord",i="index",j="missing",value="ANY"),  
+                 function(x,i,j,value){
+                     if(allsame(i) & is.logical(i)){
+                         jj <- elements(x)
+                         jj[i] <- elements(value)
+                         return(disord(jj,hash(x)))
+                     } else {
+                         stop("if using a regular index to replace, must specify each element once and once only")
+                     }
+                 } )
 
 setReplaceMethod("[",signature(x="disord",i="disord",j="missing",value="disord"),  # x[x<3] <- x[x<3] + 100
                  function(x,i,j,value){
@@ -313,7 +326,7 @@ setReplaceMethod("[",signature(x="disord",i="disord",j="missing",value="ANY"), #
 
 setReplaceMethod("[",signature(x="disord",i="missing",j="missing",value="ANY"), # x[] <- numeric
                  function(x,i,j,value,drop=TRUE){
-                   stopifnot(length(value)==1)
+                   stopifnot(consistent(x,value))
                    out <- elements(x)
                    out[] <- value   # the meat
                    out <- disord(out)

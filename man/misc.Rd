@@ -56,8 +56,10 @@ involved:
 
 \itemize{
   \item\code{rev()} reverses its argument and returns a \code{disord}
-  object with a reversed hash, which ensures that \code{rev(rev(x))==x}.
-  \item\code{sort()} returns a vector of sorted elements.
+  object with a reversed hash, which ensures that \code{rev(rev(x))==x}
+  (and the two are consistent).
+  \item\code{sort()} returns a vector of sorted elements (not a
+  \code{disord})
   \item{length()} returns the length of the data component of the
   object.
   \item\code{sapply(X,f)} returns a disord object which is the result of
@@ -74,10 +76,11 @@ involved:
 \author{Robin K. S. Hankin}
 \examples{
 a <- disord(c(a=1,b=2,c=7))
+a
 names(a)
 length(a)
 sqrt(a)
-is.na(a) <- c(FALSE,FALSE,TRUE)
+
 
 # powers() and vars() in the mvp package return lists; see the vignette
 # for more discussion.
