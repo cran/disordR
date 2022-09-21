@@ -11,7 +11,7 @@
 
 <meta name="author" content="Robin K. S. Hankin" />
 
-<meta name="date" content="2022-05-24" />
+<meta name="date" content="2022-09-21" />
 
 <title>The disordR package: design philosophy and a use-case in multivariate polynomials</title>
 
@@ -171,7 +171,7 @@ pre code {
 
 <h1 class="title toc-ignore">The <code>disordR</code> package: design philosophy and a use-case in multivariate polynomials</h1>
 <h4 class="author">Robin K. S. Hankin</h4>
-<h4 class="date">2022-05-24</h4>
+<h4 class="date">2022-09-21</h4>
 
 </div>
 
@@ -225,15 +225,19 @@ coeffs(a) &lt;- coeffs(a)^2 + 7</code></pre>
 <p>To fix ideas, consider a fixed small mvp object:</p>
 <pre class="r"><code>library(&quot;mvp&quot;)</code></pre>
 <pre><code>## Loading required package: magrittr</code></pre>
+<pre><code>## Loading required package: mpoly</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;mvp&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:mpoly&#39;:
+## 
+##     is.constant, vars</code></pre>
 <pre><code>## The following object is masked from &#39;package:base&#39;:
 ## 
 ##     trunc</code></pre>
 <pre class="r"><code>a &lt;- as.mvp(&quot;5 a c^3 + a^2 d^2 f^2 + 4 a^3 b e^3 + 3 b c f + 2 b^2 e^3&quot;)
 a</code></pre>
 <pre><code>## mvp object algebraically equal to
-## 5 a c^3  +  a^2 d^2 f^2  +  4 a^3 b e^3  +  3 b c f  +  2 b^2 e^3</code></pre>
+## 5 a c^3 + a^2 d^2 f^2 + 4 a^3 b e^3 + 3 b c f + 2 b^2 e^3</code></pre>
 <p>Extraction presents issues; consider <code>coeffs(a)&lt;3</code>. This object has Boolean elements but has the same ordering ambiguity as <code>coeffs(a)</code>. One might expect that we could use this to extract elements of <code>coeffs(a)</code>: specifically, those elements less than 5. We may use replace methods for coefficients if this makes sense. Idiom such as</p>
 <pre><code>coeffs(a)[coeffs(a)&lt;5] &lt;- 4 + coeffs(a)[coeffs(a)&lt;5]
 coeffs(a) &lt;- pmax(a,3)</code></pre>
@@ -300,7 +304,11 @@ b</code></pre>
 ## [1] 9 4 7 1 2 6 3 8 5
 ## (in some order)</code></pre>
 <pre class="r"><code>a+b</code></pre>
-<pre><code>## Error in a + b: consistent(e1, e2) is not TRUE</code></pre>
+<pre><code>## 
+## disordR discipline error in:</code></pre>
+<pre><code>## a + b</code></pre>
+<pre><code>## Error in check_matching_hash(e1, e2, match.call()): 
+## hash codes 5b7279f3c05d00cf1e8f999a755151e0451c56ec and 488e1c6f4e2c062379d47b5511730a9785661318 do not match</code></pre>
 <p>The error is given because objects <code>a</code> and <code>b</code> are stored in an implementation-specific order (we say that <code>a</code> and <code>b</code> are <em>incompatible</em>). In the package, many extract and replace methods are implemented whenever this is admissible:</p>
 <pre class="r"><code>a[a&lt;0.5] &lt;- 0  # round down
 a</code></pre>
@@ -343,14 +351,19 @@ a &lt;- rmvp()
 b &lt;- rmvp()
 a</code></pre>
 <pre><code>## mvp object algebraically equal to
-## 3 a b^9 e^4 f  +  7 a^2 b^4 d^6 e f^4  +  4 a^4 b^6 c^5 d^11 f^4  +  6 a^6 b^3 c^14 f^2  +  5 a^11 e^6 f^6  +  b^8 e^7 f^12  +  2 b^10 d^10 f^4</code></pre>
+## 3 a b^9 e^4 f + 7 a^2 b^4 d^6 e f^4 + 4 a^4 b^6 c^5 d^11 f^4 + 6 a^6 b^3 c^14
+## f^2 + 5 a^11 e^6 f^6 + b^8 e^7 f^12 + 2 b^10 d^10 f^4</code></pre>
 <pre class="r"><code>b</code></pre>
 <pre><code>## mvp object algebraically equal to
-## 5 a c^2 e^8 f^7  +  4 a^2 b^5 c^6 e^3  +  7 a^2 b^7 c^4 d e^2  +  a^4 d^6 e^5 f  +  6 a^6 d^6 f^6  +  3 b^7 c^7 e^5  +  2 b^10 c^3 f^7</code></pre>
+## 5 a c^2 e^8 f^7 + 4 a^2 b^5 c^6 e^3 + 7 a^2 b^7 c^4 d e^2 + a^4 d^6 e^5 f + 6
+## a^6 d^6 f^6 + 3 b^7 c^7 e^5 + 2 b^10 c^3 f^7</code></pre>
 <p>Observe that standard multivariate polynomial algebra works:</p>
 <pre class="r"><code>a + 2*b</code></pre>
 <pre><code>## mvp object algebraically equal to
-## 3 a b^9 e^4 f  +  10 a c^2 e^8 f^7  +  7 a^2 b^4 d^6 e f^4  +  8 a^2 b^5 c^6 e^3  +  14 a^2 b^7 c^4 d e^2  +  4 a^4 b^6 c^5 d^11 f^4  +  2 a^4 d^6 e^5 f  +  6 a^6 b^3 c^14 f^2  +  12 a^6 d^6 f^6  +  5 a^11 e^6 f^6  +  6 b^7 c^7 e^5  +  b^8 e^7 f^12  +  4 b^10 c^3 f^7  +  2 b^10 d^10 f^4</code></pre>
+## 3 a b^9 e^4 f + 10 a c^2 e^8 f^7 + 7 a^2 b^4 d^6 e f^4 + 8 a^2 b^5 c^6 e^3 + 14
+## a^2 b^7 c^4 d e^2 + 4 a^4 b^6 c^5 d^11 f^4 + 2 a^4 d^6 e^5 f + 6 a^6 b^3 c^14
+## f^2 + 12 a^6 d^6 f^6 + 5 a^11 e^6 f^6 + 6 b^7 c^7 e^5 + b^8 e^7 f^12 + 4 b^10
+## c^3 f^7 + 2 b^10 d^10 f^4</code></pre>
 <pre class="r"><code>(a+b)*(a-b) == a^2-b^2   # should be TRUE (expression is quite long)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <p>We can extract the coefficients of these polynomials using the <code>coeffs()</code> function:</p>
@@ -366,29 +379,42 @@ a</code></pre>
 <pre class="r"><code>coeffs(a)[coeffs(a) &lt; 4] &lt;- 0   # set any coefficient of a that is &lt;4 to zero
 a</code></pre>
 <pre><code>## mvp object algebraically equal to
-## 7 a^2 b^4 d^6 e f^4  +  4 a^4 b^6 c^5 d^11 f^4  +  6 a^6 b^3 c^14 f^2  +  5 a^11 e^6 f^6</code></pre>
+## 7 a^2 b^4 d^6 e f^4 + 4 a^4 b^6 c^5 d^11 f^4 + 6 a^6 b^3 c^14 f^2 + 5 a^11 e^6
+## f^6</code></pre>
 <pre class="r"><code>coeffs(b) &lt;- coeffs(b)%%2       # consider coefficients of b modulo 2
 b</code></pre>
 <pre><code>## mvp object algebraically equal to
-## a c^2 e^8 f^7  +  a^2 b^7 c^4 d e^2  +  a^4 d^6 e^5 f  +  b^7 c^7 e^5</code></pre>
+## a c^2 e^8 f^7 + a^2 b^7 c^4 d e^2 + a^4 d^6 e^5 f + b^7 c^7 e^5</code></pre>
 <p>However, many operations which have reasonable idiom are in fact meaningless and are implicitly prohibited. For example:</p>
 <pre class="r"><code>x &lt;- rmvp()     # set up new mvp objects x and y
 y &lt;- rmvp()</code></pre>
 <p>Then the following should all produce errors:</p>
 <pre class="r"><code>coeffs(x) + coeffs(y)  # order implementation specific</code></pre>
-<pre><code>## Error in coeffs(x) + coeffs(y): consistent(e1, e2) is not TRUE</code></pre>
+<pre><code>## 
+## disordR discipline error in:</code></pre>
+<pre><code>## coeffs(x) + coeffs(y)</code></pre>
+<pre><code>## Error in check_matching_hash(e1, e2, match.call()): 
+## hash codes 70fa3d05d5b2549b4c29d1938fe380f5d49d9844 and 7e74a4c559eedc67cc7ac322e8b61c2e4dbe7e71 do not match</code></pre>
 <pre class="r"><code>coeffs(x) &lt;- coeffs(y) # ditto</code></pre>
 <pre><code>## Error in `coeffs&lt;-.mvp`(`*tmp*`, value = new(&quot;disord&quot;, .Data = c(5, 2, : consistent(vars(x), value) is not TRUE</code></pre>
 <pre class="r"><code>coeffs(x) &lt;- 1:2       # replacement value not length 1</code></pre>
-<pre><code>## Error in .local(x, i = i, j = j, ..., value): consistent(x, value) is not TRUE</code></pre>
+<pre><code>## 
+## disordR discipline error in:</code></pre>
+<pre><code>## .local(x = x, i = i, j = j, value = value)</code></pre>
+<pre><code>## Error in check_matching_hash(x, value, match.call()): 
+## cannot combine disord object with hash code 70fa3d05d5b2549b4c29d1938fe380f5d49d9844 with a vector</code></pre>
 <pre class="r"><code>coeffs(x)[coeffs(x) &lt; 3] &lt;- coeffs(x)[coeffs(y) &lt; 3]</code></pre>
-<pre><code>## Error in .local(x, i, j = j, ..., drop): consistent(x, i) is not TRUE</code></pre>
+<pre><code>## 
+## disordR discipline error in:</code></pre>
+<pre><code>## .local(x = x, i = i, j = j, drop = drop)</code></pre>
+<pre><code>## Error in check_matching_hash(x, i, match.call()): 
+## hash codes 70fa3d05d5b2549b4c29d1938fe380f5d49d9844 and 7e74a4c559eedc67cc7ac322e8b61c2e4dbe7e71 do not match</code></pre>
 <div id="vars-and-powers-return-disord-objects" class="section level2">
 <h2><code>vars()</code> and <code>powers()</code> return <code>disord</code> objects</h2>
 <p>The <code>disord()</code> function takes a list argument, and this is useful for working with <code>mvp</code> objects:</p>
 <pre class="r"><code>(a &lt;- as.mvp(&quot;x^2 + 4 - 3*x*y*z&quot;))</code></pre>
 <pre><code>## mvp object algebraically equal to
-## 4  -  3 x y z  +  x^2</code></pre>
+## 4 - 3 x y z + x^2</code></pre>
 <pre class="r"><code>vars(a)</code></pre>
 <pre><code>## A disord object with hash 9395842c6e67dfb0be871e04b3a8964a1c9b9bd5 and elements
 ## [[1]]
@@ -421,27 +447,29 @@ y &lt;- rmvp()</code></pre>
 <pre class="r"><code>double &lt;- function(x){2*x}
 (a &lt;- rmvp())</code></pre>
 <pre><code>## mvp object algebraically equal to
-## a^2 c^10 d^2 f^2  +  7 a^3 d^5 e^14  +  6 a^5 c^7 d^4 e^2  +  4 a^8 c d^5 e^6  +  2 b^2 c^4 d^10 e^5 f  +  5 b^2 c^6 d^2 e^7 f^6  +  3 c^6 d^4 e^2 f^6</code></pre>
+## a^2 c^10 d^2 f^2 + 7 a^3 d^5 e^14 + 6 a^5 c^7 d^4 e^2 + 4 a^8 c d^5 e^6 + 2 b^2
+## c^4 d^10 e^5 f + 5 b^2 c^6 d^2 e^7 f^6 + 3 c^6 d^4 e^2 f^6</code></pre>
 <pre class="r"><code>pa &lt;- powers(a)
 va &lt;- vars(a)
 ca &lt;- coeffs(a)
 pa[ca&lt;4] &lt;- sapply(pa,double)[ca&lt;4]
 mvp(va,pa,ca)</code></pre>
 <pre><code>## mvp object algebraically equal to
-## 7 a^3 d^5 e^14  +  a^4 c^20 d^4 f^4  +  6 a^5 c^7 d^4 e^2  +  4 a^8 c d^5 e^6  +  5 b^2 c^6 d^2 e^7 f^6  +  2 b^4 c^8 d^20 e^10 f^2  +  3 c^12 d^8 e^4 f^12</code></pre>
+## 7 a^3 d^5 e^14 + a^4 c^20 d^4 f^4 + 6 a^5 c^7 d^4 e^2 + 4 a^8 c d^5 e^6 + 5 b^2
+## c^6 d^2 e^7 f^6 + 2 b^4 c^8 d^20 e^10 f^2 + 3 c^12 d^8 e^4 f^12</code></pre>
 <p>Above, <code>a</code> was a multivariate polynomial and we doubled the powers of all variables in terms with coefficients less than 4. Or even:</p>
 <pre class="r"><code>a &lt;- as.mvp(&quot;3 + 5*a*b - 7*a*b*x^2 + 2*a*b^2*c*d*x*y -6*x*y + 8*a*b*c*d*x&quot;)
 a</code></pre>
 <pre><code>## mvp object algebraically equal to
-## 3  +  5 a b  +  8 a b c d x  -  7 a b x^2  +  2 a b^2 c d x y  -  6 x y</code></pre>
+## 3 + 5 a b + 8 a b c d x - 7 a b x^2 + 2 a b^2 c d x y - 6 x y</code></pre>
 <pre class="r"><code>pa &lt;- powers(a)
 va &lt;- vars(a)
 ca &lt;- coeffs(a)
 va[sapply(pa,length) &gt; 4] &lt;- sapply(va,toupper)[sapply(pa,length) &gt; 4]
 mvp(va,pa,ca)</code></pre>
 <pre><code>## mvp object algebraically equal to
-## 3  +  8 A B C D X  +  2 A B^2 C D X Y  +  5 a b  -  7 a b x^2  -  6 x y</code></pre>
-<p>Above, we took multivariate polynomial <code>a</code> and replaced the variable names in every term with more than four variables with their uppercase equivalents. The <code>mvp</code> package does not include <code>powers&lt;-()</code> or <code>vars&lt;-()</code> functions, but these would have made the idiom nicer (I will get round to writing them when the <code>disordR</code> package is more stable).</p>
+## 3 + 8 A B C D X + 2 A B^2 C D X Y + 5 a b - 7 a b x^2 - 6 x y</code></pre>
+<p>Above, we took multivariate polynomial <code>a</code> and replaced the variable names in every term with more than four variables with their uppercase equivalents.</p>
 </div>
 </div>
 
