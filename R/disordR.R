@@ -28,6 +28,7 @@ setValidity("disord", function(object){
 `is.disord` <- function(x){inherits(x,"disord")}
 
 `disord` <- function(v,h,drop=TRUE){ # v is a vector but it needs a hash attribute
+    if(is.disord(v)){v <- elements(v)}
     if(missing(h)){h <- hashcal(v)}
     out <- new("disord",.Data=v,hash=h)  # this is the only occurence of new() in the package
     if(drop){out <- drop(out)}
@@ -272,7 +273,7 @@ setMethod("[", signature("disord",i="disord",j="missing",drop="ANY"),  # makes t
           function(x,i,j,drop=TRUE){
               ignore <- check_matching_hash(x,i,match.call())
               out <- elements(x)[elements(i)]
-              out <- disord(out, hashcal(c(hash(x),hash(i))))  # NB newly generated hash, stops things like a[a>4] + a[a<3] but allows a[x<3] <- x[x<3]
+              out <- disord(out, hashcal(c(hash(x),hash(i))),drop=FALSE)  # NB newly generated hash, stops things like a[a>4] + a[a<3] but allows a[x<3] <- x[x<3]
               if(drop){
                   return(drop(out))
               } else {
@@ -313,6 +314,7 @@ setReplaceMethod("[",signature(x="disord",i="disord",j="missing",value="ANY"), #
                  function(x,i,j,value){
                      ignore <- check_matching_hash(x,i,match.call())
                      ignore <- check_matching_hash(x[i],value,match.call())
+                     if((length(value)>1) & (!allsame(value)) & (is.disord(x[i,drop=FALSE]))){stop("problem! [github issue #39]")}
                      jj <- elements(x)
                      jj[elements(i)] <- value   # the meat; OK because x %~% i
                      disord(jj,hash(x))
@@ -417,3 +419,5 @@ setMethod("match",signature(x="disord",table="ANY"),
     stop(m)
   }
 }
+
+
