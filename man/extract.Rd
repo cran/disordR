@@ -77,13 +77,30 @@ and is a \code{setClassUnion()} of classes \code{numeric},
   
 }
 \author{Robin K. S. Hankin}
+\note{
+
+  Package versions prior to \code{disordR_0.0-9-6} allowed idiom such as
+
+  \preformatted{
+    a <- disord(1:9)
+    a[a<3] + a[a>7]
+  }
+
+  but this is now disallowed.  The issue is discussed in
+  \code{inst/note_on_extraction.Rmd}.
+}
+
+  
 \seealso{\code{\link{drop}}}
 \examples{
 a <- disord(sample(9))
 a
+a + 6*a^2
 a[a>5]  # "give me all elements of a that exceed 5"
 
-a[a<5] <- a[a<5] + 100  # "replace all elements of a that exceed 5 with their value plus 100"
+a[] # a disord object, same elements as 'a', but with a different hash
+
+a[a<5] <- a[a<5] + 100  # "replace all elements of 'a' less than 5 with their value plus 100"
 a
 
 ## Following expressions would return an error if executed:
