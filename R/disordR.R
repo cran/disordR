@@ -86,6 +86,11 @@ setMethod("is.na<-","disord",
               disord(jj,hash(x))
           } )
 
+setGeneric("which")
+setMethod("which","disord",
+          function(x){stop("which() does not make sense for disord object")
+          } )
+
 `rdis` <- function(n=9){disord(sample(n))}
 
 setMethod("show", "disord", function(object){disord_show(object)})
@@ -325,7 +330,7 @@ setReplaceMethod("[",signature(x="disord",i="missing",j="missing",value="ANY"), 
                    ignore <- check_matching_hash(x,value,match.call())
                    out <- elements(x)
                    out[] <- value   # the meat
-                   out <- disord(out)
+                   out <- disord(out,hash(x))
                    if(drop)(out <- drop(out))
                    return(out)
                  } )
@@ -333,6 +338,13 @@ setReplaceMethod("[",signature(x="disord",i="missing",j="missing",value="ANY"), 
 setReplaceMethod("[",signature(x="disord",i="missing",j="missing",value="disord"), # x[] <- disord
                  function(x,i,j,value){stop("x[] <- disord not defined")
                  } )
+
+setMethod("[[", signature("disord",i="index"),  # x[[index]]
+          function(x,i){
+            stop("double square extraction x[[index]] not implemented")
+          } )
+
+setReplaceMethod("[[",signature(x="disord",i="index",value="ANY"), function(x,i,j,drop){stop("list replacement not currently implemented")})
 
 setGeneric("sort")
 setMethod("sort", signature(x = "disord"),
@@ -359,9 +371,13 @@ setMethod("lapply",signature(X="disord"),
 setGeneric("unlist")
 setMethod("unlist","disord",
           function(x,recursive=TRUE){
+            stopifnot(recursive)
             out <- unlist(elements(x),recursive=recursive)
-            stopifnot(length(out) == length(x))
-            return(disord(out,h=hash(x)))
+            if(length(out) == length(x)){
+              return(disord(out,h=hash(x)))
+            } else {
+              return(disord(out))
+            }
           } )
 
 setMethod("c","disord",function(x, ..., recursive){stop("c() does not make sense for disord")})
@@ -420,4 +436,4 @@ setMethod("match",signature(x="disord",table="ANY"),
   }
 }
 
-
+setMethod("length<-","disord",function(x,value){stop("cannot change the length of a disord object")})

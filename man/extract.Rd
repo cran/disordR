@@ -2,6 +2,7 @@
 \alias{extract}
 \alias{index-class}
 \alias{[}
+\alias{[[}
 \alias{[.disord}
 \alias{[,disord-method}
 \alias{[,disord,index,ANY-method}
@@ -34,10 +35,26 @@
 \alias{[<-,disord,disord,missing,disord-method}
 \alias{[<-,disord,disord,missing-method}
 \alias{[<-,disord,missing,missing,ANY-method}
+\alias{[[,disord,index-method}
+\alias{[[<-,disord,index-method}
 \alias{Arith,ANY,disord-method}
 \alias{Arith,disord,ANY-method}
 \alias{Arith,disord,disord-method}
 \alias{Arith,disord,missing-method}
+\alias{[,disord,disindex,missing,ANY-method}
+\alias{[,disord,disindex,ANY,ANY-method}
+\alias{[,ANY,disindex,ANY,ANY-method}
+\alias{[,disord,disindex,missing,ANY-method}
+\alias{[<-,disord,disindex,ANY,ANY-method}
+\alias{[<-,disord,disindex,missing,ANY-method}
+\alias{[[,disord,disindex-method}
+\alias{[[,ANY,disindex-method}
+\alias{[[<-,disord,disindex,missing,ANY-method}
+\alias{[[<-,ANY,disindex,ANY,ANY-method}
+\alias{[[<-,ANY,disindex,ANY-method}
+\alias{[[<-,disord,disindex,missing-method}
+\alias{[[<-,disord,disindex,ANY-method}
+\alias{[[<-,disord,index,ANY-method}
 \title{Extraction and replacement methods for class \code{"disord"}}
 \description{
   The \code{disord} class provides basic arithmetic and extract/replace
@@ -61,10 +78,22 @@ and is a \code{setClassUnion()} of classes \code{numeric},
     \item{[<-}{\code{signature(x = "disord", i = "missing", j = "index")}: ... }
     \item{[<-}{\code{signature(x = "disord", i = "matrix", j = "missing")}: ... }
     \item{[<-}{\code{signature(x = "disord", i = "missing", j = "missing")}: ... }
+    \item{[[}{\code{signature(x = "disord", i = "index")}: ... }
+    \item{[[<-}{\code{signature(x = "disord", i = "index",value="ANY")}: ... }
     \item{Arith}{\code{signature(e1 = "ANY", e2 = "disord")}: ... }
     \item{Arith}{\code{signature(e1 = "disord", e2 = "ANY")}: ... }
     \item{Arith}{\code{signature(e1 = "disord", e2 = "disord")}: ... }
     \item{Arith}{\code{signature(e1 = "disord", e2 = "missing")}: ... }
+    \item{[}{\code{signature(x="disord",i="disindex",j="missing",drop="ANY")}: ... }
+    \item{[}{\code{signature(x="disord",i="disindex",j="ANY",drop="ANY")}: ... }
+    \item{[}{\code{signature(x="ANY",i="disindex",j="ANY",drop="ANY")}: ... }
+    \item{[}{\code{signature(x="disord",i="disindex",j="missing",value="ANY")}: ... }
+    \item{[}{\code{signature(x="disord",i="disindex",j="ANY",value="ANY")}: ...}
+    \item{[<-}{\code{signature(x="disord",i="disindex",j="missing",drop="ANY")}: ... }
+    \item{[[}{\code{signature("disord",i="disindex")}: ... }
+    \item{[[}{\code{signature("ANY",i="disindex")}: ... }
+    \item{[[<-}{\code{signature(x="disord",i="disindex",j="missing",value="ANY")} ... }
+    \item{[[<-}{\code{signature(x="ANY",i="disindex",j="ANY",value="ANY")} ... }
   }
 
   The extraction method takes a \code{drop} argument which if
@@ -74,6 +103,15 @@ and is a \code{setClassUnion()} of classes \code{numeric},
   Note that the hash code is unchanged if all elements are extracted
   (because the order might have changed) but unchanged if none are
   (because there is only one way to extract no elements).
+
+  Idiom such as \code{x[]} returns an object identical to \code{x}
+  except for the hash code, which is changed.  I can't quite see a
+  sensible use-case for this, but the method allows one to define an
+  object \code{y <- x[]} for which \code{x} and \code{y} are
+  incompatible.
+
+  Double square extraction, as in \code{x[[i]]} and \code{x[[i]] <-
+  value}, is via (experimental) \code{disindex} functionality.
   
 }
 \author{Robin K. S. Hankin}
@@ -89,9 +127,8 @@ and is a \code{setClassUnion()} of classes \code{numeric},
   but this is now disallowed.  The issue is discussed in
   \code{inst/note_on_extraction.Rmd}.
 }
-
-  
-\seealso{\code{\link{drop}}}
+ 
+\seealso{\code{\link{drop}},\code{\link{misc}}}
 \examples{
 a <- disord(sample(9))
 a
