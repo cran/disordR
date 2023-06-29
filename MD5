@@ -1,7 +1,7 @@
-964b4634cada44af80d05feb8158efd2 *DESCRIPTION
+8cb14f198a57c9de862aeb27a33104b6 *DESCRIPTION
 69517cd22f09949cc6f78f98ded9dd00 *NAMESPACE
 96722f8491c90c67ab9f4f79e2565412 *NEWS.md
-facad6b5dba576a80fa6f771849fd6e7 *R/disordR.R
+cd4e9f9e9555712609a741fff42af97b *R/disordR.R
 ea59291b8639d7adbea3f8f16ad130cf *R/experimental_disindex.R
 d44e70239559f811db45a7685d98ef3e *README.md
 9c29d2052339f0c9a643ae16027d7edf *build/vignette.rds
@@ -12,7 +12,7 @@ ae04499bca723544dd305fd77db48b5c *inst/doc/disindex.Rmd
 c06afe8438f52b3d7e6ded5bfdd56a12 *inst/doc/disindex.html
 459377e3032c8df4b278e14dbae0f42a *inst/doc/disordR.R
 d6011b70abe7d40505b2a2a993189903 *inst/doc/disordR.Rmd
-12195e71484889fcdd1c042efa9cc296 *inst/doc/disordR.html
+0c4f2f166935876b589f4dc09cde51e5 *inst/doc/disordR.html
 136f0ff0aaa494691718c91783666ca7 *man/arith.Rd
 47f7811a45ea2d1766c1e24d5fef1199 *man/c.Rd
 a95ae106ed2cd59d26268ace24e16006 *man/consistent.Rd
@@ -20,9 +20,9 @@ a95ae106ed2cd59d26268ace24e16006 *man/consistent.Rd
 c96b36fee300983f6badc9c5497d7b77 *man/disord-class.Rd
 6acffb5458ae247497658a30d54e8b74 *man/disord.Rd
 1d9b568ac42c3d0fa4b7c72150e6f3cb *man/drop.Rd
-46af76641e6266861d51f234b53c7939 *man/extract.Rd
+b896dd857a93def08ea39f9855cdab7b *man/extract.Rd
 161b45b2316522739254cbc0c6441ad1 *man/figures/disordR.png
-a04e0f4c62346d9c83bb4f8541dbe372 *man/misc.Rd
+6e46ce93014961a91458630cd2253c1f *man/misc.Rd
 d6a9b231fb1227e1e6de97613998792a *man/rdis.Rd
 b523b9b1039a6e9f6a65ee1adb1baf97 *man/summary.Rd
 a241cb8be7b686cded205840c51b3ccc *tests/testthat.R
