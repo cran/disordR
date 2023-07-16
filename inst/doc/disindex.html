@@ -176,32 +176,32 @@ pre code {
 <pre class="r"><code>library(&quot;disordR&quot;)</code></pre>
 <pre><code>## Loading required package: Matrix</code></pre>
 <pre class="r"><code>(d &lt;- disord(c(4,6,1,2,3,4,5,1)))</code></pre>
-<pre><code>## A disord object with hash 5040c31dbb0dc7d927d329ed38dcde39eb4b7b5e and elements
+<pre><code>## A disord object with hash cd822d12c58b45299369f3fc8eac0dafb43ae96a and elements
 ## [1] 4 6 1 2 3 4 5 1
 ## (in some order)</code></pre>
 <pre class="r"><code>ind &lt;- which(d&gt;4)</code></pre>
 <p>Above, object <code>ind</code> points to those elements of <code>d</code> which exceed 4. Thus:</p>
 <pre class="r"><code>d</code></pre>
-<pre><code>## A disord object with hash 5040c31dbb0dc7d927d329ed38dcde39eb4b7b5e and elements
+<pre><code>## A disord object with hash cd822d12c58b45299369f3fc8eac0dafb43ae96a and elements
 ## [1] 4 6 1 2 3 4 5 1
 ## (in some order)</code></pre>
 <pre class="r"><code>d[ind]</code></pre>
-<pre><code>## A disord object with hash a1b0eeebec2189bbda4e1c6cd961f298d88a26db and elements
+<pre><code>## A disord object with hash a207af19d5f8c45513bb9d6a1d74074761e1eacb and elements
 ## [1] 6 5
 ## (in some order)</code></pre>
 <pre class="r"><code>d[ind] &lt;- 99
 d</code></pre>
-<pre><code>## A disord object with hash 3e5275b4aecd651799df0446f18fa18c7f1ffac5 and elements
+<pre><code>## A disord object with hash 668501301ec04f6a4b020bf4be450e776a6c00e7 and elements
 ## [1]  4 99  1  2  3  4 99  1
 ## (in some order)</code></pre>
 <p>However, we cannot assert that <code>ind</code> is elements 2 and 7 of <code>d</code>, for the elements of <code>d</code> are stored in an implementation-specific order. If we examine <code>ind</code> directly, we see:</p>
 <pre class="r"><code>ind</code></pre>
-<pre><code>## A disind object with hash 5040c31dbb0dc7d927d329ed38dcde39eb4b7b5e and 2 (implementation-specific) elements</code></pre>
+<pre><code>## A disind object with hash cd822d12c58b45299369f3fc8eac0dafb43ae96a and 2 (implementation-specific) elements</code></pre>
 <p>which correctly says that the elements of <code>ind</code> are implementation-specific. However, the main application of <code>disindex</code> objects is for list extraction.</p>
 <pre class="r"><code>d &lt;- disord(c(4,1,6,2))
 dl &lt;- sapply(d,function(x){seq(from=5,to=x)})
 dl</code></pre>
-<pre><code>## A disord object with hash cb0e5a24fda84f96c1c5a261653f5b6e60823f66 and elements
+<pre><code>## A disord object with hash 70afe6106273642ad6397fcac3089b4d1dae5447 and elements
 ## [[1]]
 ## [1] 5 4
 ## 

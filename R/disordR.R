@@ -1,5 +1,12 @@
 `hash` <- function(x){x@hash}  # extractor method
-`hashcal` <- function(x){digest::sha1(x)}
+`hashcal` <- function(x,ultra_strict=FALSE){
+    if(ultra_strict){
+        return(digest::sha1(list(x,date(),runif(1))))
+    } else {
+        return(digest::sha1(x))
+    }
+}
+
 `elements` <- function(x){if(is.disord(x)){return(x@.Data)}else{return(x)}}  # no occurrences of '@' below this line
 
 setClass("disord", contains = "vector", slots=c(.Data="vector",hash="character"),
@@ -29,7 +36,7 @@ setValidity("disord", function(object){
 
 `disord` <- function(v,h,drop=TRUE){ # v is a vector but it needs a hash attribute
     if(is.disord(v)){v <- elements(v)}
-    if(missing(h)){h <- hashcal(v)}
+    if(missing(h)){h <- hashcal(v,ultra_strict=TRUE)}
     out <- new("disord",.Data=v,hash=h)  # this is the only occurence of new() in the package
     if(drop){out <- drop(out)}
     return(out)
@@ -64,9 +71,9 @@ setMethod("match",signature(x="disord",table="disord"),
           } )
 
 setGeneric("%in%")
-setMethod("%in%",signature("disord","ANY"),function(x,table){disord(match(elements(x),table,nomatch=0L)>0L,hash(x))})
+setMethod("%in%",signature("disord","ANY"),function(x,table){disord(match(elements(x),table,nomatch=0L)>0L,hash(x),drop=FALSE)})
 setMethod("%in%",signature("ANY","disord"),function(x,table){match(x,elements(table),nomatch=0L)>0L})
-setMethod("%in%",signature("disord","disord"),function(x,table){disord(match(elements(x),elements(table),nomatch=0L)>0L,hash(x))})
+setMethod("%in%",signature("disord","disord"),function(x,table){disord(match(elements(x),elements(table),nomatch=0L)>0L,hash(x),drop=FALSE)})
 
 setGeneric("drop")
 setMethod("drop","disord",function(x){if(allsame(x)){return(elements(x))}else{return(x)}})
@@ -86,12 +93,7 @@ setMethod("is.na<-","disord",
               disord(jj,hash(x))
           } )
 
-setGeneric("which")
-setMethod("which","disord",
-          function(x){stop("which() does not make sense for disord object")
-          } )
-
-`rdis` <- function(n=9){disord(sample(n))}
+`rdis` <- function(n=9){disord(sample(n,replace=TRUE))}
 
 setMethod("show", "disord", function(object){disord_show(object)})
 
@@ -193,12 +195,12 @@ setMethod("Arith",signature(e1 = "numeric", e2="disord" ), numeric_arith_disord)
     ignore <- check_matching_hash(e1,e2,match.call())
     a1 <- elements(e1)
     switch(.Generic,
-           "==" = disord(a1==e2,hash(e1)),
-           "!=" = disord(a1!=e2,hash(e1)),
-           ">"  = disord(a1> e2,hash(e1)),
-           "<"  = disord(a1< e2,hash(e1)),
-           ">=" = disord(a1>=e2,hash(e1)),
-           "<=" = disord(a1<=e2,hash(e1)),
+           "==" = disord(a1==e2,hash(e1),drop=FALSE),
+           "!=" = disord(a1!=e2,hash(e1),drop=FALSE),
+           ">"  = disord(a1> e2,hash(e1),drop=FALSE),
+           "<"  = disord(a1< e2,hash(e1),drop=FALSE),
+           ">=" = disord(a1>=e2,hash(e1),drop=FALSE),
+           "<=" = disord(a1<=e2,hash(e1),drop=FALSE),
            stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
@@ -207,12 +209,12 @@ setMethod("Arith",signature(e1 = "numeric", e2="disord" ), numeric_arith_disord)
     ignore <- check_matching_hash(e1,e2,match.call())
     a2 <- elements(e2)
     switch(.Generic,
-           "==" = disord(e1==a2,hash(e2)),
-           "!=" = disord(e1!=a2,hash(e2)),
-           ">"  = disord(e1> a2,hash(e2)),
-           "<"  = disord(e1< a2,hash(e2)),
-           ">=" = disord(e1>=a2,hash(e2)),
-           "<=" = disord(e1<=a2,hash(e2)),
+           "==" = disord(e1==a2,hash(e2),drop=FALSE),
+           "!=" = disord(e1!=a2,hash(e2),drop=FALSE),
+           ">"  = disord(e1> a2,hash(e2),drop=FALSE),
+           "<"  = disord(e1< a2,hash(e2),drop=FALSE),
+           ">=" = disord(e1>=a2,hash(e2),drop=FALSE),
+           "<=" = disord(e1<=a2,hash(e2),drop=FALSE),
            stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
@@ -226,8 +228,8 @@ setMethod("Compare", signature(e1="ANY"   , e2="disord"), any_compare_disord   )
     a1 <- elements(e1)
     a2 <- elements(e2)
     switch(.Generic,
-           "&" = disord(a1 & a2,hash(e1)),
-           "|" = disord(a1 | a2,hash(e1)),
+           "&" = disord(a1 & a2,hash(e1),drop=FALSE),
+           "|" = disord(a1 | a2,hash(e1),drop=FALSE),
            stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
@@ -236,8 +238,8 @@ setMethod("Compare", signature(e1="ANY"   , e2="disord"), any_compare_disord   )
     ignore <- check_matching_hash(e1,e2,match.call())
     a1 <- elements(e1)
     switch(.Generic,
-           "&" = disord(a1 & e2,hash(e1)),
-           "|" = disord(a1 | e2,hash(e1)),
+           "&" = disord(a1 & e2,hash(e1),drop=FALSE),
+           "|" = disord(a1 | e2,hash(e1),drop=FALSE),
            stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
@@ -246,8 +248,8 @@ setMethod("Compare", signature(e1="ANY"   , e2="disord"), any_compare_disord   )
     ignore <- check_matching_hash(e1,e2,match.call())
     a2 <- elements(e2)
     switch(.Generic,
-           "&" = disord(e1 & a2,hash(e2)),
-           "|" = disord(e1 | a2,hash(e2)),
+           "&" = disord(e1 & a2,hash(e2),drop=FALSE),
+           "|" = disord(e1 | a2,hash(e2),drop=FALSE),
            stop(gettextf("%s not supported for disord objects", dQuote(.Generic)))
            )
 }
@@ -319,7 +321,7 @@ setReplaceMethod("[",signature(x="disord",i="disord",j="missing",value="ANY"), #
                  function(x,i,j,value){
                      ignore <- check_matching_hash(x,i,match.call())
                      ignore <- check_matching_hash(x[i],value,match.call())
-                     if((length(value)>1) & (!allsame(value)) & (is.disord(x[i,drop=FALSE]))){stop("problem! [github issue #39]")}
+                     if((length(value)>1) & (!allsame(value)) & (is.disord(x[i,drop=FALSE]))){stop("disord discipline problem")}
                      jj <- elements(x)
                      jj[elements(i)] <- value   # the meat; OK because x %~% i
                      disord(jj,hash(x))
@@ -436,3 +438,4 @@ setMethod("match",signature(x="disord",table="ANY"),
 }
 
 setMethod("length<-","disord",function(x,value){stop("cannot change the length of a disord object")})
+setMethod("diff","disord",function(x){stop("cannot take the diff() of a disord object")})

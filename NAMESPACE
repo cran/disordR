@@ -3,12 +3,17 @@ export("%~%")
 export("%in%")
 export("match")
 export("lapply")
+export("unlist")
+export("which")
 
 import("methods")
 importFrom("digest" , "sha1")
+importFrom("stats" , "runif")
 
 
 S3method("summary",disord)
 S3method("print",summary.disord)
 
 importClassesFrom(Matrix,index)
+
+exportClasses(disord,disindex)

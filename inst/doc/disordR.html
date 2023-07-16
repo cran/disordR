@@ -11,7 +11,7 @@
 
 <meta name="author" content="Robin K. S. Hankin" />
 
-<meta name="date" content="2023-06-28" />
+<meta name="date" content="2023-07-17" />
 
 <title>The disordR package: design philosophy and a use-case in multivariate polynomials</title>
 
@@ -186,7 +186,7 @@ pre code {
 
 <h1 class="title toc-ignore">The <code>disordR</code> package: design philosophy and a use-case in multivariate polynomials</h1>
 <h4 class="author">Robin K. S. Hankin</h4>
-<h4 class="date">2023-06-28</h4>
+<h4 class="date">2023-07-17</h4>
 
 </div>
 
@@ -267,24 +267,24 @@ coeffs(a) &lt;- pmax(a,3)</code></pre>
 set.seed(0)
 a &lt;- rdis()
 a</code></pre>
-<pre><code>## A disord object with hash 5b7279f3c05d00cf1e8f999a755151e0451c56ec and elements
-## [1] 9 4 7 1 2 6 3 8 5
+<pre><code>## A disord object with hash 72d5b0723eb7caeb31759b5c91190e772c813166 and elements
+## [1] 9 4 7 1 2 7 2 3 1
 ## (in some order)</code></pre>
 <p>Object <code>a</code> is a <code>disord</code> object but it behaves similarly to a regular numeric vector in many ways:</p>
 <pre class="r"><code>a^2</code></pre>
-<pre><code>## A disord object with hash 5b7279f3c05d00cf1e8f999a755151e0451c56ec and elements
-## [1] 81 16 49  1  4 36  9 64 25
+<pre><code>## A disord object with hash 72d5b0723eb7caeb31759b5c91190e772c813166 and elements
+## [1] 81 16 49  1  4 49  4  9  1
 ## (in some order)</code></pre>
 <pre class="r"><code>a+1/a</code></pre>
-<pre><code>## A disord object with hash 5b7279f3c05d00cf1e8f999a755151e0451c56ec and elements
-## [1] 9.111111 4.250000 7.142857 2.000000 2.500000 6.166667 3.333333 8.125000
-## [9] 5.200000
+<pre><code>## A disord object with hash 72d5b0723eb7caeb31759b5c91190e772c813166 and elements
+## [1] 9.111111 4.250000 7.142857 2.000000 2.500000 7.142857 2.500000 3.333333
+## [9] 2.000000
 ## (in some order)</code></pre>
 <p>Above, note how the result has the same hash code as <code>a</code>. Other operations that make sense are <code>max()</code> and <code>sort()</code>:</p>
 <pre class="r"><code>max(a)</code></pre>
 <pre><code>## [1] 9</code></pre>
 <pre class="r"><code>sort(a)</code></pre>
-<pre><code>## [1] 1 2 3 4 5 6 7 8 9</code></pre>
+<pre><code>## [1] 1 1 2 2 3 4 7 7 9</code></pre>
 <p>Above, see how the result is a standard numeric vector. However, inadmissible operations give an error:</p>
 <pre class="r"><code>a[1]  # asking for the first element is inadmissible</code></pre>
 <pre><code>## Error in .local(x, i, j = j, ..., drop): if using a regular index to extract, must extract each element once and once only (or none of them)</code></pre>
@@ -293,65 +293,65 @@ a</code></pre>
 <p>Standard R semantics generally work as expected:</p>
 <pre class="r"><code>x &lt;- a + 1/a
 x</code></pre>
-<pre><code>## A disord object with hash 5b7279f3c05d00cf1e8f999a755151e0451c56ec and elements
-## [1] 9.111111 4.250000 7.142857 2.000000 2.500000 6.166667 3.333333 8.125000
-## [9] 5.200000
+<pre><code>## A disord object with hash 72d5b0723eb7caeb31759b5c91190e772c813166 and elements
+## [1] 9.111111 4.250000 7.142857 2.000000 2.500000 7.142857 2.500000 3.333333
+## [9] 2.000000
 ## (in some order)</code></pre>
 <pre class="r"><code>y &lt;- a*2-9
 y</code></pre>
-<pre><code>## A disord object with hash 5b7279f3c05d00cf1e8f999a755151e0451c56ec and elements
-## [1]  9 -1  5 -7 -5  3 -3  7  1
+<pre><code>## A disord object with hash 72d5b0723eb7caeb31759b5c91190e772c813166 and elements
+## [1]  9 -1  5 -7 -5  5 -5 -3 -7
 ## (in some order)</code></pre>
 <pre class="r"><code>x+y</code></pre>
-<pre><code>## A disord object with hash 5b7279f3c05d00cf1e8f999a755151e0451c56ec and elements
-## [1] 18.1111111  3.2500000 12.1428571 -5.0000000 -2.5000000  9.1666667  0.3333333
-## [8] 15.1250000  6.2000000
+<pre><code>## A disord object with hash 72d5b0723eb7caeb31759b5c91190e772c813166 and elements
+## [1] 18.1111111  3.2500000 12.1428571 -5.0000000 -2.5000000 12.1428571 -2.5000000
+## [8]  0.3333333 -5.0000000
 ## (in some order)</code></pre>
 <p>Above, observe that objects <code>a</code>, <code>x</code> and <code>y</code> have the same hash code: they are “compatible,” in <code>disordR</code> idiom. However, if we try to combine object <code>a</code> with another object with different hash, we get errors:</p>
 <pre class="r"><code>b &lt;- rdis()
 b</code></pre>
-<pre><code>## A disord object with hash 488e1c6f4e2c062379d47b5511730a9785661318 and elements
-## [1] 2 3 8 1 5 6 9 7 4
+<pre><code>## A disord object with hash e5680e358246458c1f1881c06f991cb54ab4249d and elements
+## [1] 5 6 7 9 5 5 9 9 5
 ## (in some order)</code></pre>
 <pre class="r"><code>a</code></pre>
-<pre><code>## A disord object with hash 5b7279f3c05d00cf1e8f999a755151e0451c56ec and elements
-## [1] 9 4 7 1 2 6 3 8 5
+<pre><code>## A disord object with hash 72d5b0723eb7caeb31759b5c91190e772c813166 and elements
+## [1] 9 4 7 1 2 7 2 3 1
 ## (in some order)</code></pre>
 <pre class="r"><code>a+b</code></pre>
 <pre><code>## 
 ## disordR discipline error in:</code></pre>
 <pre><code>## a + b</code></pre>
 <pre><code>## Error in check_matching_hash(e1, e2, match.call()): 
-## hash codes 5b7279f3c05d00cf1e8f999a755151e0451c56ec and 488e1c6f4e2c062379d47b5511730a9785661318 do not match</code></pre>
+## hash codes 72d5b0723eb7caeb31759b5c91190e772c813166 and e5680e358246458c1f1881c06f991cb54ab4249d do not match</code></pre>
 <p>The error is given because objects <code>a</code> and <code>b</code> are stored in an implementation-specific order (we say that <code>a</code> and <code>b</code> are <em>incompatible</em>). In the package, many extract and replace methods are implemented whenever this is admissible:</p>
 <pre class="r"><code>a[a&lt;0.5] &lt;- 0  # round down
 a</code></pre>
-<pre><code>## A disord object with hash 5b7279f3c05d00cf1e8f999a755151e0451c56ec and elements
-## [1] 9 4 7 1 2 6 3 8 5
+<pre><code>## A disord object with hash 72d5b0723eb7caeb31759b5c91190e772c813166 and elements
+## [1] 9 4 7 1 2 7 2 3 1
 ## (in some order)</code></pre>
 <pre class="r"><code>b[b&gt;0.6] &lt;- b[b&gt;0.6] + 3  # add 3 to every element greater than 0.6
 b</code></pre>
-<pre><code>## A disord object with hash 488e1c6f4e2c062379d47b5511730a9785661318 and elements
-## [1]  5  6 11  4  8  9 12 10  7
+<pre><code>## A disord object with hash e5680e358246458c1f1881c06f991cb54ab4249d and elements
+## [1]  8  9 10 12  8  8 12 12  8
 ## (in some order)</code></pre>
 <p>Usual semantics follow, provided one is careful to maintain the hash code:</p>
 <pre class="r"><code>d &lt;- disord(1:10)
 d</code></pre>
-<pre><code>## A disord object with hash 65e11d78de79b7f584068ad856749e3748cb837c and elements
+<pre><code>## A disord object with hash 8212f244f1fbd69d7d2db308eb1c78d917cafa30 and elements
 ##  [1]  1  2  3  4  5  6  7  8  9 10
 ## (in some order)</code></pre>
 <pre class="r"><code>e &lt;- 10 + 3*d - d^2
 e</code></pre>
-<pre><code>## A disord object with hash 65e11d78de79b7f584068ad856749e3748cb837c and elements
+<pre><code>## A disord object with hash 8212f244f1fbd69d7d2db308eb1c78d917cafa30 and elements
 ##  [1]  12  12  10   6   0  -8 -18 -30 -44 -60
 ## (in some order)</code></pre>
 <pre class="r"><code>e&lt;4</code></pre>
-<pre><code>## A disord object with hash 65e11d78de79b7f584068ad856749e3748cb837c and elements
+<pre><code>## A disord object with hash 8212f244f1fbd69d7d2db308eb1c78d917cafa30 and elements
 ##  [1] FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
 ## (in some order)</code></pre>
 <pre class="r"><code>d[e&lt;4] &lt;- e[e&lt;4]
 d</code></pre>
-<pre><code>## A disord object with hash 65e11d78de79b7f584068ad856749e3748cb837c and elements
+<pre><code>## A disord object with hash 8212f244f1fbd69d7d2db308eb1c78d917cafa30 and elements
 ##  [1]   1   2   3   4   0  -8 -18 -30 -44 -60
 ## (in some order)</code></pre>
 <p>Above, the replacement command works because <code>d</code> and <code>e</code> <em>and</em> <code>e&lt;4</code> [which is a Boolean <code>disord</code> object] all have the same hash code.</p>
