@@ -1,3 +1,6 @@
+## ----out.width='20%', out.extra='style="float:right; padding:10px"',echo=FALSE----
+knitr::include_graphics(system.file("help/figures/disordR.png", package = "disordR"))
+
 ## -----------------------------------------------------------------------------
 library("mvp")
 a <- as.mvp("5 a c^3 + a^2 d^2 f^2 + 4 a^3 b e^3 + 3 b c f + 2 b^2 e^3")
