@@ -11,7 +11,7 @@
 
 <meta name="author" content="Robin K. S. Hankin" />
 
-<meta name="date" content="2024-11-13" />
+<meta name="date" content="2025-11-03" />
 
 <title>The disordR package: design philosophy and a use-case in multivariate polynomials</title>
 
@@ -375,7 +375,7 @@ display: none;
 <h1 class="title toc-ignore">The <code>disordR</code> package: design
 philosophy and a use-case in multivariate polynomials</h1>
 <h4 class="author">Robin K. S. Hankin</h4>
-<h4 class="date">2024-11-13</h4>
+<h4 class="date">2025-11-03</h4>
 
 </div>
 
@@ -573,17 +573,17 @@ works.</p>
 set.seed(0)
 a &lt;- rdis()
 a</code></pre>
-<pre><code>## A disord object with hash 7046a57630e14a55c7d545ff178cbc9a5840343b and elements
+<pre><code>## A disord object with hash 4bd443d8718cf49182b519304398ecab9a7354ca and elements
 ## [1] 9 4 7 1 2 7 2 3 1
 ## (in some order)</code></pre>
 <p>Object <code>a</code> is a <code>disord</code> object but it behaves
 similarly to a regular numeric vector in many ways:</p>
 <pre class="r"><code>a^2</code></pre>
-<pre><code>## A disord object with hash 7046a57630e14a55c7d545ff178cbc9a5840343b and elements
+<pre><code>## A disord object with hash 4bd443d8718cf49182b519304398ecab9a7354ca and elements
 ## [1] 81 16 49  1  4 49  4  9  1
 ## (in some order)</code></pre>
 <pre class="r"><code>a+1/a</code></pre>
-<pre><code>## A disord object with hash 7046a57630e14a55c7d545ff178cbc9a5840343b and elements
+<pre><code>## A disord object with hash 4bd443d8718cf49182b519304398ecab9a7354ca and elements
 ## [1] 9.111111 4.250000 7.142857 2.000000 2.500000 7.142857 2.500000 3.333333
 ## [9] 2.000000
 ## (in some order)</code></pre>
@@ -603,17 +603,17 @@ inadmissible operations give an error:</p>
 <p>Standard R semantics generally work as expected:</p>
 <pre class="r"><code>x &lt;- a + 1/a
 x</code></pre>
-<pre><code>## A disord object with hash 7046a57630e14a55c7d545ff178cbc9a5840343b and elements
+<pre><code>## A disord object with hash 4bd443d8718cf49182b519304398ecab9a7354ca and elements
 ## [1] 9.111111 4.250000 7.142857 2.000000 2.500000 7.142857 2.500000 3.333333
 ## [9] 2.000000
 ## (in some order)</code></pre>
 <pre class="r"><code>y &lt;- a*2-9
 y</code></pre>
-<pre><code>## A disord object with hash 7046a57630e14a55c7d545ff178cbc9a5840343b and elements
+<pre><code>## A disord object with hash 4bd443d8718cf49182b519304398ecab9a7354ca and elements
 ## [1]  9 -1  5 -7 -5  5 -5 -3 -7
 ## (in some order)</code></pre>
 <pre class="r"><code>x+y</code></pre>
-<pre><code>## A disord object with hash 7046a57630e14a55c7d545ff178cbc9a5840343b and elements
+<pre><code>## A disord object with hash 4bd443d8718cf49182b519304398ecab9a7354ca and elements
 ## [1] 18.1111111  3.2500000 12.1428571 -5.0000000 -2.5000000 12.1428571 -2.5000000
 ## [8]  0.3333333 -5.0000000
 ## (in some order)</code></pre>
@@ -624,11 +624,11 @@ y</code></pre>
 errors:</p>
 <pre class="r"><code>b &lt;- rdis()
 b</code></pre>
-<pre><code>## A disord object with hash cb3c0e30910281dedbef9dc8cccf27181102dc21 and elements
+<pre><code>## A disord object with hash 13127e0ce7fc03a6c00e32e473d7424748023c6b and elements
 ## [1] 5 6 7 9 5 5 9 9 5
 ## (in some order)</code></pre>
 <pre class="r"><code>a</code></pre>
-<pre><code>## A disord object with hash 7046a57630e14a55c7d545ff178cbc9a5840343b and elements
+<pre><code>## A disord object with hash 4bd443d8718cf49182b519304398ecab9a7354ca and elements
 ## [1] 9 4 7 1 2 7 2 3 1
 ## (in some order)</code></pre>
 <pre class="r"><code>a+b</code></pre>
@@ -636,7 +636,7 @@ b</code></pre>
 ## disordR discipline error in:</code></pre>
 <pre><code>## a + b</code></pre>
 <pre><code>## Error in check_matching_hash(e1, e2, match.call()): 
-## hash codes 7046a57630e14a55c7d545ff178cbc9a5840343b and cb3c0e30910281dedbef9dc8cccf27181102dc21 do not match</code></pre>
+## hash codes 4bd443d8718cf49182b519304398ecab9a7354ca and 13127e0ce7fc03a6c00e32e473d7424748023c6b do not match</code></pre>
 <p>The error is given because objects <code>a</code> and <code>b</code>
 are stored in an implementation-specific order (we say that
 <code>a</code> and <code>b</code> are <em>incompatible</em>). In the
@@ -644,33 +644,33 @@ package, many extract and replace methods are implemented whenever this
 is admissible:</p>
 <pre class="r"><code>a[a&lt;0.5] &lt;- 0  # round down
 a</code></pre>
-<pre><code>## A disord object with hash 7046a57630e14a55c7d545ff178cbc9a5840343b and elements
+<pre><code>## A disord object with hash 4bd443d8718cf49182b519304398ecab9a7354ca and elements
 ## [1] 9 4 7 1 2 7 2 3 1
 ## (in some order)</code></pre>
 <pre class="r"><code>b[b&gt;0.6] &lt;- b[b&gt;0.6] + 3  # add 3 to every element greater than 0.6
 b</code></pre>
-<pre><code>## A disord object with hash cb3c0e30910281dedbef9dc8cccf27181102dc21 and elements
+<pre><code>## A disord object with hash 13127e0ce7fc03a6c00e32e473d7424748023c6b and elements
 ## [1]  8  9 10 12  8  8 12 12  8
 ## (in some order)</code></pre>
 <p>Usual semantics follow, provided one is careful to maintain the hash
 code:</p>
 <pre class="r"><code>d &lt;- disord(1:10)
 d</code></pre>
-<pre><code>## A disord object with hash 798fb7cd46322851d14007618045e99583ef7c0f and elements
+<pre><code>## A disord object with hash 93ed625a2e5adc7ece1689f2761a248b0d314bd8 and elements
 ##  [1]  1  2  3  4  5  6  7  8  9 10
 ## (in some order)</code></pre>
 <pre class="r"><code>e &lt;- 10 + 3*d - d^2
 e</code></pre>
-<pre><code>## A disord object with hash 798fb7cd46322851d14007618045e99583ef7c0f and elements
+<pre><code>## A disord object with hash 93ed625a2e5adc7ece1689f2761a248b0d314bd8 and elements
 ##  [1]  12  12  10   6   0  -8 -18 -30 -44 -60
 ## (in some order)</code></pre>
 <pre class="r"><code>e&lt;4</code></pre>
-<pre><code>## A disord object with hash 798fb7cd46322851d14007618045e99583ef7c0f and elements
+<pre><code>## A disord object with hash 93ed625a2e5adc7ece1689f2761a248b0d314bd8 and elements
 ##  [1] FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
 ## (in some order)</code></pre>
 <pre class="r"><code>d[e&lt;4] &lt;- e[e&lt;4]
 d</code></pre>
-<pre><code>## A disord object with hash 798fb7cd46322851d14007618045e99583ef7c0f and elements
+<pre><code>## A disord object with hash 93ed625a2e5adc7ece1689f2761a248b0d314bd8 and elements
 ##  [1]   1   2   3   4   0  -8 -18 -30 -44 -60
 ## (in some order)</code></pre>
 <p>Above, the replacement command works because <code>d</code> and

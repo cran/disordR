@@ -21,8 +21,10 @@ max(a)
 sort(a)
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 a[1]  # asking for the first element is inadmissible
 a[1] <- 1000 # also cannot replace the first element
+})
 
 ## -----------------------------------------------------------------------------
 x <- a + 1/a
@@ -32,10 +34,12 @@ y
 x+y
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 b <- rdis()
 b
 a
 a+b
+})
 
 ## -----------------------------------------------------------------------------
 a[a<0.5] <- 0  # round down
@@ -79,10 +83,12 @@ x <- rmvp()     # set up new mvp objects x and y
 y <- rmvp()
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 coeffs(x) + coeffs(y)  # order implementation specific
 coeffs(x) <- coeffs(y) # ditto
 coeffs(x) <- 1:2       # replacement value not length 1
 coeffs(x)[coeffs(x) < 3] <- coeffs(x)[coeffs(y) < 3]
+})
 
 ## -----------------------------------------------------------------------------
 (a <- as.mvp("x^2 + 4 - 3*x*y*z"))

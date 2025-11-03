@@ -1,6 +1,7 @@
 setClass("disindex",slots = list(value = "numeric", hash="character"))
 setMethod("show", "disindex", function(object){disindex_show(object)})
 
+#' @export 
 `values` <- function(x){  disord(x@value,h=hash(x)) }  # exported in versions >= 0.9-3
 
 setValidity("disindex", function(object) {
@@ -14,22 +15,26 @@ setValidity("disindex", function(object) {
   }
 })
 
+#' @export 
 `disindex_show` <- function(x){
     cat("A disind object with hash",hash(x), "and", length(values(x)), "(implementation-specific) elements\n")
     return(invisible(x))
 }
 
+#' @export 
 setGeneric("summary")
 setMethod("summary","disindex",function(object,...){stop("disindex objects are for extraction only")})
 
+#' @export 
 setGeneric("which")
 setMethod("which","disord",function(x, arr.ind = FALSE, useNames = TRUE){new("disindex",value=which(elements(x)),hash=hash(x))})
 setMethod("which","disindex",function(x, arr.ind = FALSE, useNames = TRUE){stop("which() not defined on disindex objects")})
 
-
 setGeneric("length")
+#' @export 
 setMethod("length","disindex",function(x){length(values(x))})
 
+#' @export 
 setMethod("[", signature(x="disord",i="disindex",j="missing",drop="ANY"),  # makes things like a[which(a>4)] work
           function(x,i,j,drop=TRUE){
             stopifnot(identical(hash(x),hash(i)))
@@ -42,14 +47,17 @@ setMethod("[", signature(x="disord",i="disindex",j="missing",drop="ANY"),  # mak
             }
           } )
 
+#' @export 
 setMethod("[", signature(x="disord",i="disindex",j="ANY",drop="ANY"),  # stops a[which(a>4),3]
           function(x,i,j,drop=TRUE){stop("second index not implemented for disindex extraction")
           } )
 
+#' @export 
 setMethod("[", signature(x="ANY",i="disindex",j="ANY",drop="ANY"),  # stops which(a>4)[which(a>4)]
           function(x,i,j,drop=TRUE){stop("disindex objects only extract from disords")
           } )
 
+#' @export 
 setReplaceMethod("[",signature(x="disord",i="disindex",j="missing",value="ANY"),  # e.g. d[ind] <- 33
                  function(x,i,j,value){
                    stopifnot(identical(hash(x),hash(i)))
@@ -59,10 +67,12 @@ setReplaceMethod("[",signature(x="disord",i="disindex",j="missing",value="ANY"),
                    return(disord(jj))
                  } )
 
+#' @export 
 setReplaceMethod("[",signature(x="disord",i="disindex",j="ANY",value="ANY"),
                  function(x,i,j,value){stop("second index not implemented for disindex replacement methods")
                  } )
 
+#' @export 
 setMethod("[[", signature("disord",i="disindex"),  # x[[ind]]
           function(x,i){
             stopifnot(identical(hash(x),hash(i)))
@@ -70,11 +80,12 @@ setMethod("[[", signature("disord",i="disindex"),  # x[[ind]]
             elements(x)[[values(i)]]
           } )
 
+#' @export 
 setMethod("[[", signature("ANY",i="disindex"),  # stops x[[ind]]
           function(x,i){stop("disindex only accesses disord lists")
           } )
 
-
+#' @export 
 setReplaceMethod("[[",signature(x="disord",i="disindex",j="missing",value="ANY"),  # e.g. d[[ind]] <- 33
                  function(x,i,j,value){
                    stopifnot(identical(hash(x),hash(i)))
@@ -85,10 +96,12 @@ setReplaceMethod("[[",signature(x="disord",i="disindex",j="missing",value="ANY")
                    return(disord(jj))  # NB hash changed!
                  } )
 
+#' @export 
 setReplaceMethod("[[",signature(x="ANY",i="disindex",j="ANY",value="ANY"),  # e.g. d[ind] <- 33
                  function(x,i,j,value){stop("replacement method not meaningful in this context")})
 
 
+#' @export 
 `binder` <- function(x,y){
     message("rbind() and cbind() not currently implemented for disord objects (even if the hash codes match)")
     check_matching_hash(x,y)
