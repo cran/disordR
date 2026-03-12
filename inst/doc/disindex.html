@@ -367,23 +367,23 @@ extraction methods, including list extraction, to operate with the
 output of <code>which()</code>. Consider the following R session:</p>
 <pre class="r"><code>library(&quot;disordR&quot;)
 (d &lt;- disord(c(4,6,1,2,3,4,5,1)))</code></pre>
-<pre><code>## A disord object with hash 4fda2c4037c8f9644dfa816ef7603f573cca0e4b and elements
+<pre><code>## A disord object with hash 01ab50f7b60c5434cefefe1baffbcacf47832d68 and elements
 ## [1] 4 6 1 2 3 4 5 1
 ## (in some order)</code></pre>
 <pre class="r"><code>ind &lt;- which(d&gt;4)</code></pre>
 <p>Above, object <code>ind</code> points to those elements of
 <code>d</code> which exceed 4. Thus:</p>
 <pre class="r"><code>d</code></pre>
-<pre><code>## A disord object with hash 4fda2c4037c8f9644dfa816ef7603f573cca0e4b and elements
+<pre><code>## A disord object with hash 01ab50f7b60c5434cefefe1baffbcacf47832d68 and elements
 ## [1] 4 6 1 2 3 4 5 1
 ## (in some order)</code></pre>
 <pre class="r"><code>d[ind]</code></pre>
-<pre><code>## A disord object with hash 49b7c198fc867500dd2d8bf5da545e98e07fa258 and elements
+<pre><code>## A disord object with hash 988a7153d40a5e4b51a7b00d7360f607249a2130 and elements
 ## [1] 6 5
 ## (in some order)</code></pre>
 <pre class="r"><code>d[ind] &lt;- 99
 d</code></pre>
-<pre><code>## A disord object with hash 88cb8d45f9bb47bb55ebe68011cff8f4957e48a9 and elements
+<pre><code>## A disord object with hash e558b6fa5c7e25640479209484703e60455f70ae and elements
 ## [1]  4 99  1  2  3  4 99  1
 ## (in some order)</code></pre>
 <p>However, we cannot assert that <code>ind</code> is elements 2 and 7
@@ -391,14 +391,14 @@ of <code>d</code>, for the elements of <code>d</code> are stored in an
 implementation-specific order. If we examine <code>ind</code> directly,
 we see:</p>
 <pre class="r"><code>ind</code></pre>
-<pre><code>## A disind object with hash 4fda2c4037c8f9644dfa816ef7603f573cca0e4b and 2 (implementation-specific) elements</code></pre>
+<pre><code>## A disind object with hash 01ab50f7b60c5434cefefe1baffbcacf47832d68 and 2 (implementation-specific) elements</code></pre>
 <p>which correctly says that the elements of <code>ind</code> are
 implementation-specific. However, the main application of
 <code>disindex</code> objects is for list extraction.</p>
 <pre class="r"><code>d &lt;- disord(c(4,1,6,2))
 dl &lt;- sapply(d,function(x){seq(from=5,to=x)})
 dl</code></pre>
-<pre><code>## A disord object with hash 24a14fc386b89f4531d21bb93b29fa65a2102be3 and elements
+<pre><code>## A disord object with hash a6152d8b6a23cc9e00ff2403dcf2836e11f996c8 and elements
 ## [[1]]
 ## [1] 5 4
 ## 
