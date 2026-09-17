@@ -30,7 +30,6 @@
 \alias{match,disord-method}
 \alias{match,disord,ANY-method}
 \alias{match,ANY,disord-method}
-\alias{match,ANY,disord-method}
 \alias{match,disord,disord-method}
 \alias{\%in\%}
 \alias{\%in\%,disord-method}
@@ -58,10 +57,38 @@
 \alias{jitter,disord-method}
 \title{Miscellaneous functions}
 \description{
-
 This page documents various functions that work for disords, and I will
 add to these from time to time as I add new functions that make sense
 for disord objects (or identify functions that break disord discipline).
+}
+
+\usage{
+\S4method{length}{disord}(x)
+\S4method{sort}{disord}(x, decreasing = FALSE, \dots)
+\S4method{rev}{disord}(x)
+\S4method{sapply}{disord}(X, FUN, \dots, simplify = TRUE, USE.NAMES = TRUE)
+\S4method{lapply}{disord}(X, FUN, \dots)
+\S4method{match}{disord,ANY}(x, table, nomatch = NA_integer_, incomparables = NULL)
+\S4method{match}{ANY,disord}(x, table, nomatch = NA_integer_, incomparables = NULL)
+\S4method{match}{disord,disord}(x, table, nomatch = NA_integer_, incomparables = NULL)
+\S4method{unlist}{disord}(x, recursive = TRUE)
+\S4method{diff}{disord}(x, \dots)
+\S4method{jitter}{disord}(x, factor=1, amount=NULL)
+binder(x,y)
+}
+\arguments{
+  \item{x, y, X}{A \code{disord} or \code{disindex} object}
+  \item{table}{Target table for matching}
+  \item{nomatch}{The value to be returned in the case when no match is found}
+  \item{incomparables}{A vector of values that cannot be matched}
+  \item{FUN}{The function to be applied}
+  \item{decreasing}{Logical indicating if the sort order should be decreasing}
+  \item{recursive, simplify, USE.NAMES}{Standard options passed to base functions}
+  \item{factor, amount}{Passed to \code{jitter()}}
+  \item{\dots}{Further arguments passed to underlying methods}
+}
+\details{
+
 Functions like \code{sin()} and \code{abs()} work as expected: they take
 and return \code{disord} objects with the same hash as \code{x} (which
 means that idiom like \code{x + sin(x)} is accepted).  However, there
@@ -104,12 +131,12 @@ are a few functions that are a little more involved:
   elements, and returns a \code{disord} object with the correct hash
   code.
 }
-}
-\arguments{\item{x}{Object of class \code{disord}}}
+
+  }
 \value{Returns a disord}
 \author{Robin K. S. Hankin}
 \note{
-
+  
 Some functionality is not yet implemented.  Factors, lists, and named
 vectors do not behave entirely consistently in the package;
 \code{paste()} gives inconsistent results when called with disords.
@@ -146,8 +173,8 @@ sqrt(a)
 # powers() and vars() in the mvp package return lists; see the vignette
 # for more discussion.
 
-l <- disord(list(3,6:9,1:10))  
-sapply(l,length)
+l <- disord(list(3, 6:9, 1:10))  
+sapply(l, length)
 
 unlist(l)
 
